@@ -59,11 +59,21 @@
                 <input class="login-input" id="username" name="username" type="text" required>
                 <label for="password">Password</label>
                 <input class="login-input" type="password" name="password" id="password" required>
-                <button class="login-button" type="submit">Login</button>
-                <a href="/inbox">Sign up an account</a>
+                <% if (typeof message !=='undefined' ) { %>
+                    <p>
+                        <%= message %>
+                    </p>
+                    <script>
+                        console.log('<%= message %>')
+                    </script>
+                    <% } %>
+                        <button class="login-button" type="submit">Login</button>
+                        <a href="/inbox">Sign up an account</a>
             </form>
         </div>
     </div>
 </body>
+<script defer>
+</script>
 
 </html>

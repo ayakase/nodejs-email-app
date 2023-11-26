@@ -40,6 +40,8 @@ const connection = mysql.createConnection({
 //       subject TEXT,
 //       content TEXT NOT NULL,
 //       sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//       deleted_by_sender TINYINT(1) DEFAULT 0,
+//       deleted_by_receiver TINYINT(1) DEFAULT 0,
 //       FOREIGN KEY (sender_id) REFERENCES users(id),
 //       FOREIGN KEY (receiver_id) REFERENCES users(id)
 //     );
