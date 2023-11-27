@@ -166,8 +166,13 @@
     </div>
 </body>
 <script defer>
-
-
+    function signOut() {
+        document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'password=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        setTimeout(() => {
+            window.location.href = '/signin';
+        }, 1000);
+    }
 </script>
 
 </html>

@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const port = 8000;
 const bodyParser = require('body-parser');
-const connection = require('./dbsetup');
+const connection = require('./connect');
 const cookieParser = require('cookie-parser');
 
 app.set('view engine', 'ejs');
@@ -12,18 +12,11 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
-    // connection.query('SELECT * FROM `emails` WHERE receiver_id = ?', [1], (err, results) => {
-    //     if (err) throw err;
-    //     console.log(results);
-    //     res.render('inbox', { emails: results });
-    // });
     let username = req.cookies['username']
     let password = req.cookies['password']
-    console.log(username, password)
     if (username && password) {
         connection.query(`SELECT * FROM users WHERE email = ?`, [username], (error, result) => {
             if (error) throw error
-            console.log(result[0].id)
             if (password == result[0].password) {
                 res.redirect('/inbox')
             } else {
@@ -38,11 +31,9 @@ app.get('/', (req, res) => {
 app.get('/inbox', (req, res) => {
     let username = req.cookies['username']
     let password = req.cookies['password']
-    console.log(username, password)
     if (username && password) {
         connection.query(`SELECT * FROM users WHERE email = ?`, [username], (error, result) => {
             if (error) throw error
-            console.log(result[0].id)
             if (password == result[0].password) {
                 connection.query(`SELECT emails.*, sender.name AS sender_name
                 FROM emails
@@ -78,18 +69,15 @@ app.delete('/outbox/:array', (req, res) => {
     })
 })
 app.get('/signup', (req, res) => {
-    console.log("a")
     res.render('signup');
 });
 
 app.get('/outbox', (req, res) => {
     let username = req.cookies['username']
     let password = req.cookies['password']
-    console.log(username, password)
     if (username && password) {
         connection.query(`SELECT * FROM users WHERE email = ?`, [username], (error, result) => {
             if (error) throw error
-            console.log(result[0].id)
             if (password == result[0].password) {
                 connection.query(`SELECT emails.*, receiver.name AS receiver_name
             FROM emails
@@ -98,7 +86,6 @@ app.get('/outbox', (req, res) => {
             `,
                     [result[0].id], (err, results) => {
                         if (err) throw err;
-                        console.log(results)
                         res.render('outbox', { emails: results, username: username });
                     });
             } else {
@@ -113,11 +100,9 @@ app.get('/outbox', (req, res) => {
 app.get('/compose', (req, res) => {
     let username = req.cookies['username']
     let password = req.cookies['password']
-    console.log(username, password)
     if (username && password) {
         connection.query(`SELECT * FROM users WHERE email = ?`, [username], (error, result) => {
             if (error) throw error
-            console.log(result[0].id)
             if (password == result[0].password) {
                 connection.query(`SELECT * FROM users`,
                     [result[0].id], (err, results) => {
@@ -133,15 +118,31 @@ app.get('/compose', (req, res) => {
     }
 });
 app.post('/compose', (req, res) => {
-    console.log(req.body)
-    connection.query(`SELECT * from users WHERE email = ?`, [req.body.sender], (err, results) => {
-        if (err) throw err
-        console.log(results[0])
-        connection.query(`INSERT INTO emails (sender_id, receiver_id,subject,content) VALUES (?, ?, ?, ?)`, [results[0].id, req.body.receiver, req.body.subject, req.body.content], (err, results) => {
-            if (err) throw err
-            res.redirect('compose')
+    let username = req.cookies['username']
+    let password = req.cookies['password']
+    if (username && password) {
+        connection.query(`SELECT * FROM users WHERE email = ?`, [username], (error, result) => {
+            if (error) throw error
+            if (password == result[0].password) {
+                connection.query(`SELECT * FROM users`,
+                    [result[0].id], (err, result) => {
+                        if (err) throw err;
+                        connection.query(`SELECT * from users WHERE email = ?`, [req.body.sender], (err, results) => {
+                            if (err) throw err
+                            connection.query(`INSERT INTO emails (sender_id, receiver_id,subject,content) VALUES (?, ?, ?, ?)`, [results[0].id, req.body.receiver, req.body.subject, req.body.content], (err, results) => {
+                                if (err) throw err
+                                res.render('compose', { users: result, username: username, message: "Email sent" });
+                            })
+                        })
+                    });
+            } else {
+                res.render('error')
+            }
         })
-    })
+    } else {
+        res.render('error')
+    }
+
 })
 app.get('/signin', (req, res) => {
     res.render('signin');
@@ -166,11 +167,9 @@ app.post('/signin', (req, res) => {
 app.get('/inboxdetail', (req, res) => {
     let username = req.cookies['username']
     let password = req.cookies['password']
-    console.log(username, password)
     if (username && password) {
         connection.query(`SELECT * FROM users WHERE email = ?`, [username], (error, result) => {
             if (error) throw error
-            console.log(result[0].id)
             if (password == result[0].password) {
                 connection.query(`
                 SELECT emails.*, users.name AS sender_name, users.email AS sender_email
@@ -180,7 +179,6 @@ app.get('/inboxdetail', (req, res) => {
                 `
                     , [emailId], (err, result) => {
                         if (err) throw err;
-                        console.log(result)
                         res.render('inboxdetail', { username: username, detail: result })
                     })
             }
@@ -189,16 +187,13 @@ app.get('/inboxdetail', (req, res) => {
         res.render('error')
     }
     const emailId = req.query.id;
-    console.log(emailId)
 })
 app.get('/outboxdetail', (req, res) => {
     let username = req.cookies['username']
     let password = req.cookies['password']
-    console.log(username, password)
     if (username && password) {
         connection.query(`SELECT * FROM users WHERE email = ?`, [username], (error, result) => {
             if (error) throw error
-            console.log(result[0].id)
             if (password == result[0].password) {
                 connection.query(`
                 SELECT emails.*, users.name AS receiver_name, users.email AS receiver_email
@@ -208,7 +203,6 @@ app.get('/outboxdetail', (req, res) => {
                 `
                     , [emailId], (err, result) => {
                         if (err) throw err;
-                        console.log(result)
                         res.render('outboxdetail', { username: username, detail: result })
                     })
             }
@@ -217,11 +211,9 @@ app.get('/outboxdetail', (req, res) => {
         res.render('error')
     }
     const emailId = req.query.id;
-    console.log(emailId)
 
 })
 app.post('/signup', (req, res) => {
-    console.log(req.body)
     if (req.body.password != req.body.reenter) {
         res.render('signup', { message: 'Password not match' })
     } else if (req.body.password.length < 6) {
