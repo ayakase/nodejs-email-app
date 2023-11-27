@@ -121,6 +121,34 @@
             font-weight: bold;
             color: white;
         }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .pagination li {
+            display: inline;
+            margin: 0 5px;
+        }
+
+        .pagination li a {
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            color: #333;
+        }
+
+        .pagination li a:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 
@@ -176,6 +204,9 @@
                             <% }); %>
                     </tbody>
                 </table>
+                <div class="pagination">
+                    <ul id="pageNumbers"></ul>
+                </div>
                 <button class="delete-button" onclick="deleteItem()">Delete Selected</button>
             </div>
         </div>
@@ -219,6 +250,27 @@
             window.location.href = '/signin';
         }, 1000);
     }
+    const itemsPerPage = 5; // Change this value as needed
+    const totalItems = 30; // Change this value as needed
+
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    const pageNumbers = document.getElementById('pageNumbers');
+
+    function displayPageNumbers() {
+        for (let i = 1; i <= totalPages; i++) {
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="#" onclick="logPageNumber(${i})">${i}</a>`;
+            pageNumbers.appendChild(li);
+        }
+    }
+
+    function logPageNumber(pageNumber) {
+        console.log('Clicked page:', pageNumber);
+    }
+
+    displayPageNumbers();
+
 </script>
 
 </html>

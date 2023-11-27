@@ -224,6 +224,8 @@ app.post('/signup', (req, res) => {
     console.log(req.body)
     if (req.body.password != req.body.reenter) {
         res.render('signup', { message: 'Password not match' })
+    } else if (req.body.password.length < 6) {
+        res.render('signup', { message: 'Password must have more than 6 characters' })
     } else {
         connection.query(`SELECT * FROM users WHERE email = ?`, [req.body.email], (error, result) => {
             if (error) throw error
@@ -232,7 +234,7 @@ app.post('/signup', (req, res) => {
             } else {
                 connection.query(`INSERT INTO users (name, email, password) VALUES (?, ?, ?)`, [req.body.name, req.body.email, req.body.password], (error, result) => {
                     if (error) throw error
-                    res.render('signup', { message: "Success!" })
+                    res.render('signup', { message: "Successfully created an account!" })
                 })
             }
         })
