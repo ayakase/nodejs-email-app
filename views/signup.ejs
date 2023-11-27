@@ -11,9 +11,9 @@
             padding: 0;
         }
 
-        .login-container {
-            width: 50vh;
-            height: 50vh;
+        .signup-container {
+            width: 40vw;
+            height: 30rem;
             margin: auto;
             margin-top: 10rem;
             padding: auto;
@@ -32,7 +32,7 @@
 
         }
 
-        .login-input {
+        .signup-input {
             height: 3rem;
             border: none;
             font-size: 1.5rem;
@@ -40,7 +40,7 @@
             padding-left: 1rem;
         }
 
-        .login-button {
+        .signup-button {
             border: none;
             width: 6rem;
             height: 2rem;
@@ -54,15 +54,17 @@
 
 <body>
     <div class="container">
-        <div class="login-container">
-            <form action="/inbox" class="form-body" method="post">
-                <label for="username">Username</label>
-                <input class="login-input" id="username" name="username" type="text">
+        <div class="signup-container">
+            <form action="/signup" class="form-body" method="post">
+                <label for="username">Fullname</label>
+                <input class="signup-input" id="name" name="name" type="text" required>
+                <label for="email">Email</label>
+                <input class="signup-input" type="email" name="email" id="email">
                 <label for="password">Password</label>
-                <input class="login-input" type="password" name="password" id="password">
-                <label for="2ndpassword">Re-enter password</label>
-                <input class="login-input" type="password" name="2ndpassword" id="2ndpassword">
-                <button class="login-button" type="submit">Login</button>
+                <input class="signup-input" type="password" name="password" id="password" required>
+                <label for="reenter">Re-enter password</label>
+                <input class="signup-input" type="password" name="reenter" id="reenter" required>
+                <button class="signup-button" type="submit">signup</button>
             </form>
         </div>
     </div>

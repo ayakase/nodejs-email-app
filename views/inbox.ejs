@@ -128,9 +128,9 @@
     <div class="outer-container">
         <div class="title-bar">
             <h2>
-                Welcome @Username
+                Wellcome <%= username %>
             </h2>
-            <button class="sign-out-btn">Sign out</button>
+            <button class="sign-out-btn" onclick="signOut()">Sign out</button>
 
         </div>
         <div class="container">
@@ -146,8 +146,8 @@
                         <tr>
                             <th> Select</th>
                             <th>Sender</th>
-                            <th>Email ID</th>
-                            <th>Content</th>
+                            <th>Subject</th>
+                            <th>Received at</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -157,16 +157,21 @@
                                     <input onclick="deleteArray('<%= email.id %>')" class="checkbox-delete"
                                         type="checkbox" id=<%=email.id %>
                                 </td>
-                                <td>
+                                <td onclick="window.location.href = '/inboxdetail?id=<%= email.id %>';">
                                     <%= email.sender_name %>
                                 </td>
-                                <td>
-                                    <%= email.id %>
+                                <td onclick="window.location.href = '/inboxdetail?id=<%= email.id %>';">
+                                    <% if (!email.subject || email.subject.trim().length===0) { %>
+                                        <div>(no subject)</div>
+                                        <% } else { %>
+                                            <%= email.subject %>
+                                                <% } %>
                                 </td>
-                                <td>
-                                    <%= email.content %>
+                                <td onclick="window.location.href = '/inboxdetail?id=<%= email.id %>';">
+                                    <% const sentDate=new Date(email.sent_at); %>
+                                        <%= sentDate.toDateString() %>
+                                            <%= sentDate.toLocaleTimeString() %>
                                 </td>
-
                             </tr>
                             <% }); %>
                     </tbody>
@@ -177,15 +182,7 @@
     </div>
 </body>
 <script defer>
-    let username = localStorage.getItem('username');
-    let password = localStorage.getItem('password');
-    fetch('/inbox', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username: username, password: password })
-    })
+
     let arrayToDelete = []
     function deleteArray(id) {
         if (!(arrayToDelete.includes(id))) {
@@ -203,6 +200,13 @@
                 'Content-Type': 'application/json'
             },
         })
+    }
+    function signOut() {
+        document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'password=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        setTimeout(() => {
+            window.location.href = '/signin';
+        }, 1000);
     }
 </script>
 
