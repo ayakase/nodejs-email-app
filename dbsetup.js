@@ -1,11 +1,12 @@
-// const mysql = require('mysql2');
 const connection = require('./connect');
+// file để khởi tạo các table của database,  tạo table và thêm sample data
 connection.connect((err) => {
     if (err) {
         console.error('Connection error:', err);
         return;
     }
     console.log('Connected');
+
     connection.query(`CREATE TABLE IF NOT EXISTS users (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
@@ -30,7 +31,7 @@ connection.connect((err) => {
         );
       `, (err) => {
             if (err) throw err;
-            console.log('Emails table created');
+            console.log('Created emails table');
 
             connection.query(`
             INSERT INTO users (name, email, password) VALUES
@@ -39,21 +40,22 @@ connection.connect((err) => {
             ('User3', 'user3@example.com', 'password3');
           `, (err) => {
                 if (err) throw err;
-                console.log('Sample users inserted');
+                console.log('Inserted users sample');
 
                 connection.query(`
                 INSERT INTO emails (sender_id, receiver_id, content) VALUES
-                (1, 2, 'Hello User2, this is a message from User1.'),
-                (2, 1, 'Hi User1, thanks for the message!'),
-                (3, 1, 'Hey User1, how are you?'),
-                (1, 3, 'Hello User3, this is a message from User1.'),
-                (3, 1, 'Im doing well, thanks! How about you?'),
-                (2, 1, 'User1, I have some news to share.'),
-                (1, 2, 'Sure, whats the news?'),
-                (2, 1, 'Lets meet up for coffee tomorrow.');
+                (1, 2, 'Hello User2, How ur doing.'),
+                (2, 1, 'Hi User1, thanks for asking, Im doing good!'),
+                (3, 1, 'Hey User1,  u ok?'),
+                (1, 3, 'Hello User3, Im ok, thanks for asking, how about u.'),
+                (3, 1, 'Im doing well, thanks! '),
+                (2, 1, 'User1, Lets go somewhere tommorow.'),
+                (1, 2, 'Sure, where exactly ?'),
+                (2, 1, 'How about the cafe ?'),
+                (1, 2, 'That sounds wonderful?');
               `, (err) => {
                     if (err) throw err;
-                    console.log('Sample emails inserted');
+                    console.log('Inserted emails sample');
                 });
             });
         });

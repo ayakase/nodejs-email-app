@@ -168,6 +168,8 @@
 <script defer>
 
     function signOut() {
+        // signout bằng cách thay đổi giờ expire của cookies để nó quá hạn => tự xóa
+
         document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         document.cookie = 'password=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         setTimeout(() => {

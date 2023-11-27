@@ -182,7 +182,7 @@
     </div>
 </body>
 <script defer>
-
+    // check box, nếu check thì cho id vào trong Array, bỏ check thì xóa khỏi Array
     let arrayToDelete = []
     function deleteArray(id) {
         if (!(arrayToDelete.includes(id))) {
@@ -193,6 +193,7 @@
         }
     }
     function deleteItem() {
+        // submit array gồm id các emails cần xóa lên để thực hiện query xóa
         console.log(arrayToDelete)
         fetch('/inbox/' + arrayToDelete.toString(), {
             method: 'DELETE',
@@ -202,6 +203,7 @@
         })
             .then((result) => {
                 if (result.ok) {
+                    // nếu server trả ok thì xóa trong DOM
                     console.log("ok")
                     arrayToDelete.forEach(elementId => {
                         const elementToRemove = document.getElementById(elementId);
@@ -213,6 +215,8 @@
             })
     }
     function signOut() {
+        // signout bằng cách thay đổi giờ expire của cookies để nó quá hạn => tự xóa
+
         document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         document.cookie = 'password=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         setTimeout(() => {

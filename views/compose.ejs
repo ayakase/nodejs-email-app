@@ -98,6 +98,7 @@
         </div>
         <div class="container">
             <div class="side-nav">
+                <!-- thanh điều hướng -->
                 <a class="nav-item" href="/compose">Compose</a>
                 <a class="nav-item" href="/inbox">Inbox</a>
                 <a class="nav-item" href="/outbox">Outbox</a>
@@ -107,6 +108,7 @@
                     <div>
                         <label for="userSelect">Select a receiver:</label>
                         <select name="receiver" id="userSelect">
+                            <!-- Render ra danh sách người nhận -->
                             <% users.forEach(user=> { %>
                                 <option value="<%= user.id %>">
                                     <%= user.name %> - <%= user.email %>
@@ -120,6 +122,7 @@
                     <textarea name="content" id="content"></textarea>
                     <input type="hidden" name="sender" value="<%= username %>">
                     <button type="submit" style="width: 5rem;height: 3rem;">Send</button>
+                    <!-- message đã gửi thành công -->
                     <div style="float: right;font-size: larger;">
                         <% if (typeof message !=='undefined' ) { %>
                             <p>
@@ -136,17 +139,8 @@
     </div>
 </body>
 <script defer>
-    // let arrayToDelete = []
-    // function deleteArray(id) {
-    //     if (!(arrayToDelete.includes(id))) {
-    //         arrayToDelete.push(id)
-    //     } else if (arrayToDelete.includes(id)) {
-    //         let index = arrayToDelete.indexOf(id)
-    //         arrayToDelete.splice(index, 1)
-    //     }
-    //     console.log(arrayToDelete);
-    // }
     function signOut() {
+        // signout bằng cách thay đổi giờ expire của cookies để nó quá hạn => tự xóa
         document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         document.cookie = 'password=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         setTimeout(() => {

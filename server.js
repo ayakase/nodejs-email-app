@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const port = 8000;
 const bodyParser = require('body-parser');
+// middleware để parse cookies
 const connection = require('./connect');
 const cookieParser = require('cookie-parser');
 
@@ -14,6 +15,9 @@ app.use(cookieParser());
 app.get('/', (req, res) => {
     let username = req.cookies['username']
     let password = req.cookies['password']
+    // check điều kiện xem có tồn tại user và pass trong cookies không, nếu 
+    // có thì tìm trong database xem có đúng thông tin ko, đúng thì sang route /inbox, ko đúng thì render lại /signin
+    // nếu ko tồn tại thì render lại route signin
     if (username && password) {
         connection.query(`SELECT * FROM users WHERE email = ?`, [username], (error, result) => {
             if (error) throw error
@@ -31,6 +35,9 @@ app.get('/', (req, res) => {
 app.get('/inbox', (req, res) => {
     let username = req.cookies['username']
     let password = req.cookies['password']
+    // check điều kiện xem có tồn tại user và pass trong cookies không, nếu 
+    // có thì tìm trong database xem có đúng thông tin ko, đúng thì thực hiện query tìm tất cả các emails
+    // đã nhận và trả về view, nếu cookies trống hoặc sai thì render view /error
     if (username && password) {
         connection.query(`SELECT * FROM users WHERE email = ?`, [username], (error, result) => {
             if (error) throw error
@@ -55,16 +62,24 @@ app.get('/inbox', (req, res) => {
 });
 
 app.delete('/inbox/:array', (req, res) => {
+    // nhận array gồm id những mail cần xóa và tiến hành query xóa bằng cách thay
+    // deleted_by_receiver bằng 1 để không hiển thị trên views của người nhận
+    // nhưng vẫn giữ nguyên cho người gửi
     deleteArray = req.params.array.split(',').map(Number);
     connection.query(`UPDATE emails SET deleted_by_receiver = 1 WHERE id IN (?)`, [deleteArray], (err, result) => {
         if (err) throw err
+        // gủi status 200 để view xác nhận, ok thì tiến hành xóa element trong DOM
         res.sendStatus(200)
     })
 })
 app.delete('/outbox/:array', (req, res) => {
+    // nhận array gồm id những mail cần xóa và tiến hành query xóa bằng cách thay
+    // deleted_by_sender bằng 1 để không hiển thị trên views của người gửi
+    // nhưng vẫn giữ nguyên cho người nhận
     deleteArray = req.params.array.split(',').map(Number);
     connection.query(`UPDATE emails SET deleted_by_sender = 1 WHERE id IN (?)`, [deleteArray], (err, result) => {
         if (err) throw err
+        // gủi status 200 để view xác nhận, ok thì tiến hành xóa element trong DOM
         res.sendStatus(200)
     })
 })
@@ -75,6 +90,9 @@ app.get('/signup', (req, res) => {
 app.get('/outbox', (req, res) => {
     let username = req.cookies['username']
     let password = req.cookies['password']
+    // check điều kiện xem có tồn tại user và pass trong cookies không, nếu 
+    // có thì tìm trong database xem có đúng thông tin ko, đúng thì thực hiện query tìm tất cả các emails
+    // đã gửi và trả về view, nếu cookies trống hoặc sai thì render view /error
     if (username && password) {
         connection.query(`SELECT * FROM users WHERE email = ?`, [username], (error, result) => {
             if (error) throw error
@@ -100,6 +118,9 @@ app.get('/outbox', (req, res) => {
 app.get('/compose', (req, res) => {
     let username = req.cookies['username']
     let password = req.cookies['password']
+    // check điều kiện xem có tồn tại user và pass trong cookies không, nếu 
+    // có thì tìm trong database xem có đúng thông tin ko, đúng thì thực hiện query
+    // render ra danh sách người nhận, sai thì render error
     if (username && password) {
         connection.query(`SELECT * FROM users WHERE email = ?`, [username], (error, result) => {
             if (error) throw error
@@ -120,6 +141,9 @@ app.get('/compose', (req, res) => {
 app.post('/compose', (req, res) => {
     let username = req.cookies['username']
     let password = req.cookies['password']
+    // check điều kiện xem có tồn tại user và pass trong cookies không, nếu 
+    // có thì tìm trong database xem có đúng thông tin ko, đúng thì nhận dữ liệu từ form và insert
+    // vào database
     if (username && password) {
         connection.query(`SELECT * FROM users WHERE email = ?`, [username], (error, result) => {
             if (error) throw error
@@ -149,14 +173,18 @@ app.get('/signin', (req, res) => {
 })
 
 app.post('/signin', (req, res) => {
+    //  nhận thông tin đăng nhập từ view và validate xem có hợp lệ không
+    // có thì render view inbox và lưu thông tin vào cookies
     connection.query(`SELECT * FROM users WHERE email = ? `, [req.body.username, req.body.email], (error, result) => {
         if (error) throw error;
         if (result.length > 0) {
+            // nếu password từ form trùng với trong database thì lưu vào cookies
             if (req.body.password == result[0].password) {
                 res.cookie('username', req.body.username)
                 res.cookie('password', req.body.password)
                 res.redirect('inbox')
             } else {
+
                 res.render('signin', { message: "Password not true" })
             }
         } else {
@@ -167,10 +195,12 @@ app.post('/signin', (req, res) => {
 app.get('/inboxdetail', (req, res) => {
     let username = req.cookies['username']
     let password = req.cookies['password']
+    // vẫn là check thông tin từ cookies y như trên
     if (username && password) {
         connection.query(`SELECT * FROM users WHERE email = ?`, [username], (error, result) => {
             if (error) throw error
             if (password == result[0].password) {
+                // query để lấy thông tin chi tiết về Email đã nhận và render ra view /inboxdetail
                 connection.query(`
                 SELECT emails.*, users.name AS sender_name, users.email AS sender_email
                 FROM emails
@@ -191,10 +221,12 @@ app.get('/inboxdetail', (req, res) => {
 app.get('/outboxdetail', (req, res) => {
     let username = req.cookies['username']
     let password = req.cookies['password']
+    // vẫn là check thông tin từ cookies y như trên
     if (username && password) {
         connection.query(`SELECT * FROM users WHERE email = ?`, [username], (error, result) => {
             if (error) throw error
             if (password == result[0].password) {
+                // query để lấy thông tin chi tiết về Email đã nhận và render ra view /inboxdetail
                 connection.query(`
                 SELECT emails.*, users.name AS receiver_name, users.email AS receiver_email
                 FROM emails
@@ -214,16 +246,20 @@ app.get('/outboxdetail', (req, res) => {
 
 })
 app.post('/signup', (req, res) => {
+    // check thông tin đăng ký, password reenter ko trùng thì gửi lỗi
     if (req.body.password != req.body.reenter) {
         res.render('signup', { message: 'Password not match' })
+        // pass dưới 6 chữ số thì gửi lỗi
     } else if (req.body.password.length < 6) {
         res.render('signup', { message: 'Password must have more than 6 characters' })
     } else {
         connection.query(`SELECT * FROM users WHERE email = ?`, [req.body.email], (error, result) => {
             if (error) throw error
             if (result.length > 0) {
+                // tìm xem trong database có email này chưa, có thì hiển thị lỗi
                 res.render('signup', { message: "Email already in use" })
             } else {
+                // không có lỗi thì insert vào database và gửi message
                 connection.query(`INSERT INTO users (name, email, password) VALUES (?, ?, ?)`, [req.body.name, req.body.email, req.body.password], (error, result) => {
                     if (error) throw error
                     res.render('signup', { message: "Successfully created an account!" })

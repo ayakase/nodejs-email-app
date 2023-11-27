@@ -54,11 +54,13 @@
 <body>
     <div class="container">
         <div class="login-container">
+            <!-- Form submit thông tin đăng nhập qua route post /signin-->
             <form action="/signin" class="form-body" method="post">
                 <label for="username">Username</label>
                 <input class="login-input" id="username" name="username" type="text" required>
                 <label for="password">Password</label>
                 <input class="login-input" type="password" name="password" id="password" required>
+                <!-- Hiển thị thông báo lỗi hoặc đăng nhập thành công nếu có -->
                 <% if (typeof message !=='undefined' ) { %>
                     <p>
                         <%= message %>
@@ -67,6 +69,7 @@
                         console.log('<%= message %>')
                     </script>
                     <% } %>
+                    <!-- Nút submit form -->
                         <button class="login-button" type="submit">Login</button>
                         <a href="/signup">Sign up an account</a>
             </form>
