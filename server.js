@@ -47,7 +47,7 @@ app.get('/inbox', (req, res) => {
                 connection.query(`SELECT emails.*, sender.name AS sender_name
                 FROM emails
                 JOIN users AS sender ON emails.sender_id = sender.id
-                WHERE emails.receiver_id = ? AND emails.deleted_by_receiver = 0;
+                WHERE emails.receiver_id = ? AND emails.deleted_by_receiver = 0 ORDER BY sent_at DESC;
                 `,
                     [result[0].id], (err, result) => {
                         if (err) throw err;
@@ -86,7 +86,7 @@ app.get('/outbox', (req, res) => {
                 connection.query(`SELECT emails.*, receiver.name AS receiver_name
             FROM emails
             JOIN users AS receiver ON emails.receiver_id = receiver.id
-            WHERE emails.sender_id = ? AND emails.deleted_by_sender = 0;
+            WHERE emails.sender_id = ? AND emails.deleted_by_sender = 0 ORDER BY sent_at DESC;
             `,
                     [result[0].id], (err, results) => {
                         if (err) throw err;
@@ -214,6 +214,21 @@ app.get('/outboxdetail', (req, res) => {
 })
 app.post('/signup', (req, res) => {
     console.log(req.body)
+    if (req.body.password != req.body.reenter) {
+        res.render('signup', { message: 'Password not match' })
+    } else {
+        connection.query(`SELECT * FROM users WHERE email = ?`, [req.body.email], (error, result) => {
+            if (error) throw error
+            if (result.length > 0) {
+                res.render('signup', { message: "Email already in use" })
+            } else {
+                connection.query(`INSERT INTO users (name, email, password) VALUES (?, ?, ?)`, [req.body.name, req.body.email, req.body.password], (error, result) => {
+                    if (error) throw error
+                    res.render('signup', { message: "Success!" })
+                })
+            }
+        })
+    }
 })
 app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
