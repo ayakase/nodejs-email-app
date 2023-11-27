@@ -154,7 +154,7 @@
                     </thead>
                     <tbody>
                         <% emails.forEach(email=> { %>
-                            <tr>
+                            <tr id="<%= email.id %>">
                                 <td>
                                     <input onclick="deleteArray('<%= email.id %>')" class="checkbox-delete"
                                         type="checkbox" id=<%=email.id %>
@@ -195,12 +195,23 @@
     }
     function deleteItem() {
         console.log(arrayToDelete)
-        fetch('/inbox/' + arrayToDelete.toString(), {
+        fetch('/outbox/' + arrayToDelete.toString(), {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
             },
         })
+            .then((result) => {
+                if (result.ok) {
+                    console.log("ok")
+                    arrayToDelete.forEach(elementId => {
+                        const elementToRemove = document.getElementById(elementId);
+                        if (elementToRemove) {
+                            elementToRemove.remove();
+                        }
+                    });
+                }
+            })
     }
     function signOut() {
         document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';

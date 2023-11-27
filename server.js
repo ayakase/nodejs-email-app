@@ -65,9 +65,17 @@ app.get('/inbox', (req, res) => {
 
 app.delete('/inbox/:array', (req, res) => {
     deleteArray = req.params.array.split(',').map(Number);
-    deleteArray.forEach(id => {
-        console.log(id);
-    });
+    connection.query(`UPDATE emails SET deleted_by_receiver = 1 WHERE id IN (?)`, [deleteArray], (err, result) => {
+        if (err) throw err
+        res.sendStatus(200)
+    })
+})
+app.delete('/outbox/:array', (req, res) => {
+    deleteArray = req.params.array.split(',').map(Number);
+    connection.query(`UPDATE emails SET deleted_by_sender = 1 WHERE id IN (?)`, [deleteArray], (err, result) => {
+        if (err) throw err
+        res.sendStatus(200)
+    })
 })
 app.get('/signup', (req, res) => {
     console.log("a")
