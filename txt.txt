@@ -1,0 +1,28 @@
+ejs-mail-db-1   | 2023-12-08 07:07:10+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.2.0-1.el8 started.
+ejs-mail-db-1   | 2023-12-08 07:07:11+00:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+ejs-mail-db-1   | 2023-12-08 07:07:11+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.2.0-1.el8 started.
+ejs-mail-db-1   | '/var/lib/mysql/mysql.sock' -> '/var/run/mysqld/mysqld.sock'
+ejs-mail-app-1  | 
+ejs-mail-app-1  | > wpr@1.0.0 start
+ejs-mail-app-1  | > node server.js
+ejs-mail-app-1  | 
+ejs-mail-db-1   | 2023-12-08T07:07:11.361613Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+ejs-mail-db-1   | 2023-12-08T07:07:11.574032Z 0 [Warning] [MY-011068] [Server] The syntax '--skip-host-cache' is deprecated and will be removed in a future release. Please use SET GLOBAL host_cache_size=0 instead.
+ejs-mail-db-1   | 2023-12-08T07:07:11.575809Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.2.0) starting as process 1
+ejs-mail-db-1   | 2023-12-08T07:07:11.587780Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+ejs-mail-app-1  | Server is listening on port 3000
+ejs-mail-app-1  | Error connecting to MySQL:  Error: connect ECONNREFUSED 172.19.0.2:3306
+ejs-mail-app-1  |     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1595:16) {
+ejs-mail-app-1  |   errno: -111,
+ejs-mail-app-1  |   code: 'ECONNREFUSED',
+ejs-mail-app-1  |   syscall: 'connect',
+ejs-mail-app-1  |   address: '172.19.0.2',
+ejs-mail-app-1  |   port: 3306,
+ejs-mail-app-1  |   fatal: true
+ejs-mail-app-1  | }
+ejs-mail-db-1   | 2023-12-08T07:07:11.821615Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+ejs-mail-db-1   | 2023-12-08T07:07:12.077836Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+ejs-mail-db-1   | 2023-12-08T07:07:12.077922Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+ejs-mail-db-1   | 2023-12-08T07:07:12.084273Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+ejs-mail-db-1   | 2023-12-08T07:07:12.149638Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
+ejs-mail-db-1   | 2023-12-08T07:07:12.149725Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.2.0'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.

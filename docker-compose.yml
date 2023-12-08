@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: wpr2023
+    ports:
+      - "3306:3306"
+    volumes:
+      - db:/var/lib/mysql
+  app:
+    build: .
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_NAME: wpr2023
+volumes:
+  db:
